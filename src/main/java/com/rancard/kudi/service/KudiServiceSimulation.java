@@ -11,6 +11,7 @@ import com.rancard.kudi.client.constants.Transactions;
 import com.rancard.kudi.client.domain.Account;
 import com.rancard.kudi.client.domain.AccountType;
 import com.rancard.kudi.client.domain.User;
+import com.rancard.kudi.client.domain.transactions.BatchTransaction;
 import com.rancard.kudi.client.domain.transactions.PaymentTransaction;
 import com.rancard.kudi.client.domain.transactions.SimpleTransaction;
 import com.rancard.kudi.client.results.*;
@@ -211,7 +212,72 @@ public class KudiServiceSimulation {
     try{
       if(transaction.getAccountFrom()==020254533344){
         transactionResult.setTransactionId(1);
-        transactionResult.setRefCode(transaction.getReferenceCode());
+        transactionResult.setReferenceCode(transaction.getReferenceCode());
+        transactionResult.setAccountFrom(transaction.getAccountFrom());
+        transactionResult.setAmount(transaction.getAmount());
+        transactionResult.setState("Completed");
+        transactionResult.setStartedAt(12);
+      }
+    }catch (Exception e){
+      e.printStackTrace();
+    }
+
+    transactionResponse.setCode(StatusCodes.SUCCESS);
+    transactionResponse.setMessage("Successful");
+    transactionResponse.setStatus(0);
+    transactionResponse.setResult(transactionResult);
+    return Response.status(200).entity(transactionResponse).build();
+  }
+
+  /**
+   * Create a simple transaction
+   */
+  @POST
+  @Path("/transactions/simple")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response createTransaction(SimpleTransaction transaction) throws JSONException{
+
+    KudiResponse transactionResponse = new KudiResponse();
+    SimpleTransactionResult transactionResult = new SimpleTransactionResult();
+
+    try{
+      if(transaction.getAccountFrom()==020254533344){
+        transactionResult.setTransactionId(2);
+        transactionResult.setReferenceCode(transaction.getReferenceCode());
+        transactionResult.setAccountFrom(transaction.getAccountFrom());
+        transactionResult.setAccountTo(transaction.getAccountTo());
+        transactionResult.setAmount(transaction.getAmount());
+        transactionResult.setStartedAt(12);
+        transactionResult.setState("Completed");
+      }
+    }catch (Exception e){
+      e.printStackTrace();
+    }
+
+    transactionResponse.setCode(StatusCodes.SUCCESS);
+    transactionResponse.setMessage("Successful");
+    transactionResponse.setStatus(0);
+    transactionResponse.setResult(transactionResult);
+    return Response.status(200).entity(transactionResponse).build();
+  }
+
+  /**
+   * Create a batch transaction
+   */
+  @POST
+  @Path("/transactions/batch")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response createTransaction(BatchTransaction transaction) throws JSONException{
+
+    KudiResponse transactionResponse = new KudiResponse();
+    PaymentTransactionResult transactionResult = new PaymentTransactionResult();
+
+    try{
+      if(transaction.getAccountFrom()==020254533344){
+        transactionResult.setTransactionId(1);
+        transactionResult.setReferenceCode(transaction.getReferenceCode());
         transactionResult.setAccountFrom(transaction.getAccountFrom());
         transactionResult.setAmount(transaction.getAmount());
         transactionResult.setState("e");
@@ -227,6 +293,42 @@ public class KudiServiceSimulation {
     transactionResponse.setResult(transactionResult);
     return Response.status(200).entity(transactionResponse).build();
   }
+
+  /**
+   * View a single transaction.
+   */
+  @GET
+  @Path("/transactions/{transactionId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response viewTransaction(@PathParam("transactionId") int id) throws JSONException{
+    KudiResponse transactionResponse = new KudiResponse();
+    SingleTransactionResult transactionResult = new SingleTransactionResult();
+
+
+      if(id ==1) {
+        transactionResult.setTransactionId(id);
+        transactionResult.setReferenceCode(1023023123);
+        transactionResult.setAccountFrom(020323112322);
+        transactionResult.setAmount(1000000);
+        transactionResult.setState("Completed");
+        transactionResult.setStartedAt(12);
+        transactionResult.setCommission(50);
+        transactionResult.setCompletedAt(06);
+        transactionResult.setTax(2);
+        transactionResult.setComment("Thank You");
+        transactionResult.setNote("Please dont disappoint");
+        transactionResult.setEvent("Credit");
+        transactionResult.setType("Payment");
+      }
+
+
+    transactionResponse.setCode(StatusCodes.SUCCESS);
+    transactionResponse.setMessage("Successful");
+    transactionResponse.setStatus(0);
+    transactionResponse.setResult(transactionResult);
+    return Response.status(200).entity(transactionResponse).build();
+  }
+
 
   /**
    *  View multiple transactions.

@@ -18,6 +18,11 @@ public class SimpleTransactionResult implements KudiResult {
   private int transactionId;
 
   /*
+Represent the reference code
+ */
+  private int referenceCode;
+
+  /*
   Represent where the account is from
    */
   private int accountFrom;

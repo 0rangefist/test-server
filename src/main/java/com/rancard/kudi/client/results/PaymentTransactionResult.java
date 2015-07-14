@@ -30,7 +30,7 @@ public class PaymentTransactionResult implements KudiResult {
   /*
   Represent the reference code
    */
-  private int refCode;
+  private int referenceCode;
 
   /*
   Represent unix timestamp when the transaction started
