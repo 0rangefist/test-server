@@ -10,23 +10,15 @@ import com.rancard.kudi.client.constants.StatusCodes;
 import com.rancard.kudi.client.constants.Transactions;
 import com.rancard.kudi.client.domain.Account;
 import com.rancard.kudi.client.domain.AccountType;
-import com.rancard.kudi.client.results.EmptyResult;
-import com.rancard.kudi.client.results.ExchangeRatesResult;
-import com.rancard.kudi.client.results.KudiResponse;
-import com.rancard.kudi.client.results.LoginResult;
 import com.rancard.kudi.client.domain.User;
-import com.rancard.kudi.client.results.SingleAccountResult;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.core.Response;
+import com.rancard.kudi.client.domain.transactions.SimpleTransaction;
+import com.rancard.kudi.client.domain.transactions.Transaction;
+import com.rancard.kudi.client.results.*;
 import org.codehaus.jettison.json.JSONException;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Path;
-import javax.ws.rs.POST;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-
+import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -158,7 +150,7 @@ public class KudiServiceSimulation {
   @GET
   @Path("/rates")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getExchangeRates() throws JSONException, IllegalArgumentException {
+  public Response logout() throws JSONException, IllegalArgumentException {
 
     //create a response and result object
     KudiResponse ratesResponse = new KudiResponse();
@@ -186,7 +178,7 @@ public class KudiServiceSimulation {
 
     //create a response and result object
     KudiResponse createAccountResponse = new KudiResponse();
-    SingleAccountResult  singleAccountResult = new SingleAccountResult();
+    SingleAccountResult singleAccountResult = new SingleAccountResult();
     AccountType accType = new AccountType();
     singleAccountResult.setAccountName(account.getAccountName());
     singleAccountResult.setAccountNumber((new Random().nextInt(100) + 10));
@@ -202,5 +194,95 @@ public class KudiServiceSimulation {
     createAccountResponse.setResult(singleAccountResult);
 
     return Response.status(200).entity(createAccountResponse).build();
+  }
+
+  /**
+   * Create a payment transaction
+   */
+  @POST
+  @Path("/transactions/payment")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response createTransaction(Transaction transaction) throws JSONException{
+
+    KudiResponse transactionResponse = new KudiResponse();
+    PaymentTransactionResult transactionResult = new PaymentTransactionResult();
+
+    try{
+      if(transaction.getAccountFrom()==020254533344){
+        transactionResult.setTransactionId(1);
+        transactionResult.setRefCode(transaction.getReferenceCode());
+        transactionResult.setAccountFrom(transaction.getAccountFrom());
+        transactionResult.setAmount(transaction.getAmount());
+        transactionResult.setState("e");
+        transactionResult.setStartedAt(12);
+      }
+    }catch (Exception e){
+      e.printStackTrace();
+    }
+
+    transactionResponse.setCode(StatusCodes.SUCCESS);
+    transactionResponse.setMessage("Successful");
+    transactionResponse.setStatus(0);
+    transactionResponse.setResult(transactionResult);
+    return Response.status(200).entity(transactionResponse).build();
+  }
+
+  /**
+   *  View multiple transactions.
+   */
+  @POST
+  @Path("/transactions/multiple")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response viewMultipleTransaction(SimpleTransaction simpleTransaction){
+
+    KudiResponse transactionResponse = new KudiResponse();
+    CreateTransactionResult transactionResult = new CreateTransactionResult();
+
+    try{
+      if(simpleTransaction.getTransactionId()==1){
+        simpleTransaction.setTransactionId(1);
+        simpleTransaction.setReferenceCode(43);
+        simpleTransaction.setAccountFrom(23);
+        simpleTransaction.setAmount(100);
+        simpleTransaction.setCommission(3);
+        simpleTransaction.setTax(3);
+        simpleTransaction.setRealAmount(3);
+        simpleTransaction.setEvent("e");
+        simpleTransaction.setState("e");
+        simpleTransaction.setStartedAt(12);
+        simpleTransaction.setCompletedAt(3);
+        simpleTransaction.setType("w");
+        simpleTransaction.setComment("d");
+        simpleTransaction.setNote("s");
+      }
+      else if(simpleTransaction.getTransactionId()==2){
+        simpleTransaction.setTransactionId(2);
+        simpleTransaction.setReferenceCode(33);
+        simpleTransaction.setAccountFrom(45);
+        simpleTransaction.setAmount(500);
+        simpleTransaction.setCommission(7);
+        simpleTransaction.setTax(1);
+        simpleTransaction.setRealAmount(9);
+        simpleTransaction.setEvent("sf");
+        simpleTransaction.setState("we");
+        simpleTransaction.setStartedAt(10);
+        simpleTransaction.setCompletedAt(9);
+        simpleTransaction.setType("ew");
+        simpleTransaction.setComment("tr");
+        simpleTransaction.setNote("t3");
+      }
+
+    }catch (Exception e){
+      e.printStackTrace();
+    }
+
+    transactionResponse.setCode(StatusCodes.SUCCESS);
+    transactionResponse.setMessage("Successful");
+    transactionResponse.setStatus(0);
+    transactionResponse.setResult(transactionResult);
+
+    return Response.status(200).entity(transactionResponse).build();
   }
 }
