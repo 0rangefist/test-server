@@ -11,8 +11,8 @@ import com.rancard.kudi.client.constants.Transactions;
 import com.rancard.kudi.client.domain.Account;
 import com.rancard.kudi.client.domain.AccountType;
 import com.rancard.kudi.client.domain.User;
+import com.rancard.kudi.client.domain.transactions.PaymentTransaction;
 import com.rancard.kudi.client.domain.transactions.SimpleTransaction;
-import com.rancard.kudi.client.domain.transactions.Transaction;
 import com.rancard.kudi.client.results.*;
 import org.codehaus.jettison.json.JSONException;
 
@@ -203,7 +203,7 @@ public class KudiServiceSimulation {
   @Path("/transactions/payment")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Response createTransaction(Transaction transaction) throws JSONException{
+  public Response createTransaction(PaymentTransaction transaction) throws JSONException{
 
     KudiResponse transactionResponse = new KudiResponse();
     PaymentTransactionResult transactionResult = new PaymentTransactionResult();
