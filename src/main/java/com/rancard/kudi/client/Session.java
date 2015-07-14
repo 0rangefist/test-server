@@ -4,7 +4,7 @@
 
 package com.rancard.kudi.client;
 
-import com.rancard.kudi.client.constants.HeaderParameter;
+import com.rancard.kudi.client.constants.HeaderParameters;
 import com.rancard.kudi.client.exceptions.AuthenticationFailureException;
 import com.rancard.kudi.client.exceptions.BadRequestException;
 import com.rancard.kudi.client.exceptions.InternalServerErrorException;
@@ -43,7 +43,7 @@ public class Session {
       response = webResource
           .accept("application/json")
           .type("application/json")
-          .header(HeaderParameter.KUDI_TOKEN, token)
+          .header(HeaderParameters.KUDI_TOKEN, token)
           .get(ClientResponse.class);
 
       if (response.getStatus() == 400) {

@@ -4,13 +4,18 @@ package com.rancard.kudi.service;
  * Copyright (c) 2015 "Rancard Solutions"
  */
 
-import com.rancard.kudi.client.constants.HeaderParameter;
-import com.rancard.kudi.client.constants.StatusCode;
+import com.rancard.kudi.client.constants.AccountTypes;
+import com.rancard.kudi.client.constants.HeaderParameters;
+import com.rancard.kudi.client.constants.StatusCodes;
+import com.rancard.kudi.client.constants.Transactions;
+import com.rancard.kudi.client.domain.Account;
+import com.rancard.kudi.client.domain.AccountType;
 import com.rancard.kudi.client.results.EmptyResult;
 import com.rancard.kudi.client.results.ExchangeRatesResult;
 import com.rancard.kudi.client.results.KudiResponse;
 import com.rancard.kudi.client.results.LoginResult;
 import com.rancard.kudi.client.domain.User;
+import com.rancard.kudi.client.results.SingleAccountResult;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.core.Response;
@@ -74,21 +79,21 @@ public class KudiServiceSimulation {
       } else if (user.getEmail().equals("unauthorised@gmail.com")) {
         //set all the parameters for a unsuccessful login
         loginResponse.setMessage("Login unsuccessful");
-        loginResponse.setCode(StatusCode.USER_ERROR);
+        loginResponse.setCode(StatusCodes.USER_ERROR);
         loginResponse.setStatus(401);
         loginResponse.setResult(loginResult);
         return Response.status(401).entity(loginResponse).build();
       } else if (user.getEmail().equals("server_down@gmail.com")) {
         //set all the parameters for a unsuccessful login
         loginResponse.setMessage("Login unsuccessful");
-        loginResponse.setCode(StatusCode.SYSTEM_ERROR);
+        loginResponse.setCode(StatusCodes.SYSTEM_ERROR);
         loginResponse.setStatus(500);
         loginResponse.setResult(loginResult);
         return Response.status(500).entity(loginResponse).build();
       } else {
         //set all the parameters for a unsuccessful login
         loginResponse.setMessage("Login unsuccessful");
-        loginResponse.setCode(StatusCode.USER_ERROR);
+        loginResponse.setCode(StatusCodes.USER_ERROR);
         loginResponse.setStatus(400);
         loginResponse.setResult(loginResult);
         return Response.status(400).entity(loginResponse).build();
@@ -106,7 +111,7 @@ public class KudiServiceSimulation {
 
     //set all the parameters for a successful login
     loginResponse.setMessage("Login Successful");
-    loginResponse.setCode(StatusCode.SUCCESS);
+    loginResponse.setCode(StatusCodes.SUCCESS);
     loginResponse.setStatus(200);
     loginResponse.setResult(loginResult);
     return Response.status(200).entity(loginResponse).build();
@@ -116,7 +121,7 @@ public class KudiServiceSimulation {
   @GET
   @Path("/logout")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response logout(@HeaderParam(HeaderParameter.KUDI_TOKEN) String sessionToken) throws JSONException, IllegalArgumentException {
+  public Response logout(@HeaderParam(HeaderParameters.KUDI_TOKEN) String sessionToken) throws JSONException, IllegalArgumentException {
     String output;
 
     //create a response object
@@ -135,7 +140,7 @@ public class KudiServiceSimulation {
 
       //set all the parameters for a successful logout
       logoutResponse.setMessage(output);
-      logoutResponse.setCode(StatusCode.SUCCESS);
+      logoutResponse.setCode(StatusCodes.SUCCESS);
       logoutResponse.setStatus(200);
       logoutResponse.setResult(null);
       return Response.status(200).entity(logoutResponse).build();
@@ -143,7 +148,7 @@ public class KudiServiceSimulation {
 
     //set all the parameters for an unsuccessful logout
     logoutResponse.setMessage("Logout failed");
-    logoutResponse.setCode(StatusCode.SYSTEM_ERROR);
+    logoutResponse.setCode(StatusCodes.SYSTEM_ERROR);
     logoutResponse.setStatus(500);
     logoutResponse.setResult(new EmptyResult());
 
@@ -153,7 +158,7 @@ public class KudiServiceSimulation {
   @GET
   @Path("/rates")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response logout() throws JSONException, IllegalArgumentException {
+  public Response getExchangeRates() throws JSONException, IllegalArgumentException {
 
     //create a response and result object
     KudiResponse ratesResponse = new KudiResponse();
@@ -166,10 +171,36 @@ public class KudiServiceSimulation {
 
     //set all the parameters for the exchange rates response
     ratesResponse.setMessage("Rates Acquired");
-    ratesResponse.setCode(StatusCode.SUCCESS);
+    ratesResponse.setCode(StatusCodes.SUCCESS);
     ratesResponse.setStatus(200);
     ratesResponse.setResult(ratesResult);
 
     return Response.status(200).entity(ratesResponse).build();
+  }
+
+  @POST
+  @Path("/accounts")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response createAccount(Account account) throws JSONException, IllegalArgumentException {
+
+    //create a response and result object
+    KudiResponse createAccountResponse = new KudiResponse();
+    SingleAccountResult  singleAccountResult = new SingleAccountResult();
+    AccountType accType = new AccountType();
+    singleAccountResult.setAccountName(account.getAccountName());
+    singleAccountResult.setAccountNumber((new Random().nextInt(100) + 10));
+    singleAccountResult.setCurrentBalance(0);
+    singleAccountResult.setPreviousBalance(0);
+    singleAccountResult.setAccountType(AccountTypes.SAVINGS);
+    singleAccountResult.setLastTransaction(Transactions.paymentTransactions[0]);
+    singleAccountResult.setMetaData(null);
+
+    createAccountResponse.setCode(StatusCodes.SUCCESS);
+    createAccountResponse.setStatus(200);
+    createAccountResponse.setMessage(account.getAccountName() + "Account Created");
+    createAccountResponse.setResult(singleAccountResult);
+
+    return Response.status(200).entity(createAccountResponse).build();
   }
 }
