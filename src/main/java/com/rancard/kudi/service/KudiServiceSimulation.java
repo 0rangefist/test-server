@@ -4,12 +4,11 @@ package com.rancard.kudi.service;
  * Copyright (c) 2015 "Rancard Solutions"
  */
 
-import com.rancard.kudi.client.constants.AccountTypes;
 import com.rancard.kudi.client.constants.HeaderParameters;
 import com.rancard.kudi.client.constants.StatusCodes;
 import com.rancard.kudi.client.constants.Transactions;
+import com.rancard.kudi.client.constants.acctypes.AccountTypeIds;
 import com.rancard.kudi.client.domain.Account;
-import com.rancard.kudi.client.domain.AccountType;
 import com.rancard.kudi.client.domain.User;
 import com.rancard.kudi.client.domain.transactions.BatchTransaction;
 import com.rancard.kudi.client.domain.transactions.PaymentTransaction;
@@ -20,7 +19,10 @@ import org.codehaus.jettison.json.JSONException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 /*
@@ -28,6 +30,10 @@ import java.util.Random;
  */
 @Path("/api/v1")
 public class KudiServiceSimulation {
+  private String accName;
+  private int accTypeId;
+  KudiResponse createAccountResponse;
+  private SingleAccountResult singleAccountResult;
   private String randomToken = "--I was generated in the Kudi Server--";
   /**
    * Login method. This method is called by the client and
@@ -178,23 +184,90 @@ public class KudiServiceSimulation {
   public Response createAccount(Account account) throws JSONException, IllegalArgumentException {
 
     //create a response and result object
-    KudiResponse createAccountResponse = new KudiResponse();
-    SingleAccountResult singleAccountResult = new SingleAccountResult();
-    AccountType accType = new AccountType();
-    singleAccountResult.setAccountName(account.getAccountName());
-    singleAccountResult.setAccountNumber((new Random().nextInt(100) + 10));
+    createAccountResponse = new KudiResponse();
+    singleAccountResult = new SingleAccountResult();
+    accName = account.getAccountName();
+    singleAccountResult.setAccountName(accName);
+    singleAccountResult.setAccountNumber(967);
     singleAccountResult.setCurrentBalance(0);
     singleAccountResult.setPreviousBalance(0);
-    singleAccountResult.setAccountType(AccountTypes.SAVINGS);
+    if(account.getTypeId() == AccountTypeIds.KUDI){
+      singleAccountResult.setTypeId(AccountTypeIds.KUDI);
+      accTypeId = AccountTypeIds.KUDI;
+    }else if(account.getTypeId() == AccountTypeIds.SAVINGS){
+      singleAccountResult.setTypeId(AccountTypeIds.SAVINGS);
+      accTypeId = AccountTypeIds.SAVINGS;
+    }else if(account.getTypeId() == AccountTypeIds.CURRENT){
+      singleAccountResult.setTypeId(AccountTypeIds.CURRENT);
+      accTypeId = AccountTypeIds.CURRENT;
+    }
+
     singleAccountResult.setLastTransaction(Transactions.paymentTransactions[0]);
     singleAccountResult.setMetaData(null);
 
     createAccountResponse.setCode(StatusCodes.SUCCESS);
     createAccountResponse.setStatus(200);
-    createAccountResponse.setMessage(account.getAccountName() + "Account Created");
+    createAccountResponse.setMessage(account.getAccountName() + "Account Details");
     createAccountResponse.setResult(singleAccountResult);
 
     return Response.status(200).entity(createAccountResponse).build();
+  }
+
+  @GET
+  @Path("/accounts/{accountNumber}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response viewAccount(@PathParam("accountNumber") int accountNumber) throws JSONException, IllegalArgumentException {
+    KudiResponse viewAccountResponse = new KudiResponse();
+
+    singleAccountResult = new SingleAccountResult();
+    singleAccountResult.setAccountName("Tom's fake account");
+    singleAccountResult.setAccountNumber(967);
+    singleAccountResult.setTypeId(200);
+    singleAccountResult.setCurrentBalance(0);
+    singleAccountResult.setPreviousBalance(0);
+
+    viewAccountResponse.setCode(StatusCodes.SUCCESS);
+    viewAccountResponse.setStatus(200);
+    viewAccountResponse.setMessage(accName + "Account Details");
+    viewAccountResponse.setResult(singleAccountResult);
+
+    return Response.status(200).entity(viewAccountResponse).build();
+  }
+
+  @GET
+  @Path("/accounts")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response viewAccounts(@QueryParam("accountTypeId") int accountTypeId,
+                               @QueryParam("minimumBalance") double minimumBalance) throws JSONException
+  {
+    AccountListResponse accountListResponse = new AccountListResponse();
+
+    if(accountTypeId==100 && minimumBalance >=0) {
+      BasicAccountInfoResult firstAccount = new BasicAccountInfoResult();
+      firstAccount.setAccountName("One fake account");
+      firstAccount.setAccountNumber(578);
+      firstAccount.setTypeId(100);
+      firstAccount.setCurrentBalance(100);
+      firstAccount.setPreviousBalance(0);
+
+      BasicAccountInfoResult secondAccount = new BasicAccountInfoResult();
+      secondAccount.setAccountName("Second fake account");
+      secondAccount.setAccountNumber(234);
+      secondAccount.setTypeId(100);
+      secondAccount.setCurrentBalance(500);
+      secondAccount.setPreviousBalance(0);
+
+      List<BasicAccountInfoResult> manyAccounts = new ArrayList<BasicAccountInfoResult>();
+      manyAccounts.add(firstAccount);
+      manyAccounts.add(secondAccount);
+
+      accountListResponse.setStatus(200);
+      accountListResponse.setMessage("Your accounts after the query");
+      accountListResponse.setResult(manyAccounts);
+      return Response.status(200).entity(accountListResponse).build();
+    }
+
+    return Response.status(400).build();
   }
 
   /**

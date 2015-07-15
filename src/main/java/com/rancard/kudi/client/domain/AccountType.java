@@ -24,7 +24,7 @@ public class AccountType {
   private String name;
 
   /*
-   * category of this account type to cluster types across countries
+   * category of this account type to cluster types across acctypes
    */
   private String category;
 
@@ -56,5 +56,5 @@ public class AccountType {
   /*
    * reference to the applied fees
    */
-  private int acccountFeeId;
+  private int accountFeeId;
 }

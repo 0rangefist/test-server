@@ -4,7 +4,6 @@
 
 package com.rancard.kudi.client.results;
 
-import com.rancard.kudi.client.domain.AccountType;
 import com.rancard.kudi.client.domain.transactions.Transaction;
 import lombok.Data;
 
@@ -14,7 +13,7 @@ import java.util.Map;
  * Represents a user's result after creating an account on the KUDI platform.
  */
 @Data
-public class SingleAccountResult implements KudiResult{
+public class SingleAccountResult implements  KudiResult{
   /*
    * Represents a user's account number after creating an account
   */
@@ -28,7 +27,7 @@ public class SingleAccountResult implements KudiResult{
   /*
   Represent account type id
    */
- 
+
   private double currentBalance;
 
   /*
@@ -39,7 +38,7 @@ public class SingleAccountResult implements KudiResult{
   /*
    * Represent the account type of the user
    */
-  private AccountType accountType;
+  private int typeId;
 
   /*
    *Represent a user's last transaction

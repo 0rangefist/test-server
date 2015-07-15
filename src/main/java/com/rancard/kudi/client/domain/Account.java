@@ -29,7 +29,7 @@ public class Account {
   private double currentBalance;
 
   /*
-   * the previous account balance.balance before lastest transactions
+   * the previous account balance.balance before latest transactions
    */
   private double previousBalance;
 
@@ -44,9 +44,9 @@ public class Account {
   private int ownerId;
 
   /*
-   * account type
+   * account type id
    */
-  private AccountType accountType;
+  private int typeId;
 
   /*
    * check whether account is active
